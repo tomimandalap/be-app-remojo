@@ -83,7 +83,7 @@ export default async function (req, res) {
 
     // GENERATE USER TOKEN
     const token = jwt.sign(
-      { role_name: detailUser.detail_role.name },
+      { user_id: detailUser._id, role_name: detailUser.detail_role.name },
       SECRET_KEY,
       { expiresIn: "2h" }
     );

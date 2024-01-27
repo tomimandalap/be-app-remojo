@@ -73,11 +73,11 @@ export default async function (req, res) {
       role_id: findRoleCustomer._doc._id, // same value like this findRoleCustomer._id
     };
 
-    await userModel.create(newUser);
+    const dataUser = await userModel.create(newUser);
 
     // CREATE USER TOKEN
     const token = jwt.sign(
-      { role_name: findRoleCustomer._doc.name },
+      { user_id: dataUser._doc._id, role_name: findRoleCustomer._doc.name },
       SECRET_KEY,
       { expiresIn: "2h" }
     );
