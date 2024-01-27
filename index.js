@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
 
-const PORT = 3001;
+import { PORT } from "./src/utils/secret.js";
+
 const app = express();
 
 // DEFINE CORS
