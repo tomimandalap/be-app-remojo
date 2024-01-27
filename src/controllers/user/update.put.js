@@ -1,8 +1,10 @@
 import userModel from "../../models/users.js";
+import storageModel from "../../models/storage.js";
 import message from "../../utils/message.js";
 import validate from "../../utils/validate.js";
-import { Types } from "mongoose";
+import cloudinary from "cloudinary";
 
+import { Types } from "mongoose";
 import { z } from "zod";
 
 const schemaValidation = z.object({
@@ -32,6 +34,8 @@ const schemaValidation = z.object({
  */
 
 export default async function (req, res) {
+  const file = req.file;
+
   try {
     // CHECK VALIDATION FORM BODY
     const body = req.body;
@@ -50,14 +54,49 @@ export default async function (req, res) {
 
     if (!findUserByID) return message(res, 404, "User not found");
 
+    let payload = {};
+    if (file) {
+      // FIND DATA IMG ON STORAGE BY STORAGE_ID
+      const storage_id = findUserByID._doc.storage_id;
+      const findImgByStorageID = await storageModel.findById({
+        _id: storage_id,
+      });
+
+      // DELETE IMG ON CLOUDINARY AND STORAGE
+      if (findImgByStorageID) {
+        await cloudinary.v2.uploader.destroy(findImgByStorageID._doc.public_id);
+        await storageModel.deleteOne({ _id: storage_id });
+      }
+
+      // UPLOAD IMG ON CLOUDINARY
+      const uploadResult = await new Promise((resolve) => {
+        cloudinary.v2.uploader
+          .upload_stream((error, uploadResult) => {
+            return resolve(uploadResult);
+          })
+          .end(file.buffer);
+      });
+
+      // CREATE DOCUMENT ON STORAGE
+      const createStorege = await storageModel.create({
+        public_id: uploadResult.public_id,
+        secure_url: uploadResult.secure_url,
+      });
+
+      // ASSIGNT STORAGE_ID FORM RESPONSE CREATE STORAGE
+      payload.storage_id = createStorege._doc._id;
+    }
+
     const updateUser = await userModel.findByIdAndUpdate(
       { _id, deleted_at: null },
-      { ...checkValidate.data },
+      { ...payload, ...checkValidate.data },
       { new: true }
     );
 
     message(res, 200, "Update user success", updateUser);
   } catch (error) {
     message(res, 500, error?.message || "Internal server error");
+  } finally {
+    if (file && file.buffer) file.buffer = undefined;
   }
 }

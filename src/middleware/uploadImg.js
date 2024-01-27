@@ -2,11 +2,7 @@ import multer from "multer";
 import path from "path";
 import message from "../utils/message.js";
 
-const Storage = multer.diskStorage({
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  },
-});
+const Storage = multer.memoryStorage();
 
 const Upload = multer({
   storage: Storage,
