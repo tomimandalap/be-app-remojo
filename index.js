@@ -1,21 +1,21 @@
 import express from "express";
 import cors from "cors";
-import "./src/config/connection.js";
 import SeedDB from "./src/utils/seed_db.js";
+import userRoute from "./src/routes/user.js";
 
 import { PORT } from "./src/utils/secret.js";
+import "./src/config/connection.js";
 
 const app = express();
 
 // DEFINE CORS
 app.use(cors());
 
-app.get("/", (req, res) => {
-  res.status(200).send({
-    message: "Hello world",
-    data: [1, 2, 3, 4],
-  });
-});
+// DEFINE BODY PARSER
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/api/v1", userRoute);
 
 await SeedDB();
 app.listen(PORT, () =>
