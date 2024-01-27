@@ -4,7 +4,9 @@ import SeedDB from "./src/utils/seed_db.js";
 import userRoute from "./src/routes/user.js";
 
 import { PORT } from "./src/utils/secret.js";
+
 import "./src/config/connection.js";
+import "./src/config/cloudinary.js";
 
 const app = express();
 
