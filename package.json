@@ -1,0 +1,25 @@
+{
+  "name": "be-app-remojo",
+  "version": "1.0.0",
+  "description": "app rental mobil jogja",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "express",
+    "mongodb",
+    "cloudinary",
+    "midtrans"
+  ],
+  "author": "tomimandalaputra",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "nodemon": "^3.0.3"
+  }
+}
