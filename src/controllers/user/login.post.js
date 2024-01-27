@@ -85,7 +85,7 @@ export default async function (req, res) {
     const token = jwt.sign(
       { role_name: detailUser.detail_role.name },
       SECRET_KEY,
-      { expiresIn: "120" }
+      { expiresIn: "2h" }
     );
 
     message(res, 200, "Login success", { token, type: "Bearer" });

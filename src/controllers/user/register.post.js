@@ -79,9 +79,7 @@ export default async function (req, res) {
     const token = jwt.sign(
       { role_name: findRoleCustomer._doc.name },
       SECRET_KEY,
-      {
-        expiresIn: "120",
-      }
+      { expiresIn: "2h" }
     );
 
     message(res, 201, "Register user success", {
