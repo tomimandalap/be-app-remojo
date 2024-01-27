@@ -23,11 +23,9 @@ const schemaValidation = z.object({
     .string()
     .regex(
       /^(\+62|62)?[\s-]?0?8[1-9]{1}\d{1}[\s-]?\d{4}[\s-]?\d{2,5}$/,
-      "Nomor handphone tidak valid"
+      "Invalid phone number format. Please enter a valid phone number"
     ),
-  email: z
-    .string()
-    .email("Invalid phone number format. Please enter a valid phone number"),
+  email: z.string().email("Invalid email format"),
   password: z
     .string()
     .regex(
