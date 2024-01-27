@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import "./src/config/connection.js";
 
 import { PORT } from "./src/utils/secret.js";
 
