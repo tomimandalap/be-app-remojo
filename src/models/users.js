@@ -8,7 +8,7 @@ const userSchema = new Schema(
     },
     last_name: {
       type: String,
-      required: true,
+      default: null,
     },
     phone: {
       type: String,

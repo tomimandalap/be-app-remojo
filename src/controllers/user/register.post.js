@@ -14,11 +14,11 @@ const schemaValidation = z.object({
     .min(1, "First name is required")
     .max(20, "First name must not exceed 20 characters")
     .trim(),
-  last_name: z
-    .string()
-    .min(1, "Last name is required")
-    .max(20, "Last name must not exceed 20 characters")
-    .trim(),
+  // last_name: z
+  //   .string()
+  //   .min(1, "Last name is required")
+  //   .max(20, "Last name must not exceed 20 characters")
+  //   .trim(),
   phone: z
     .string()
     .regex(
