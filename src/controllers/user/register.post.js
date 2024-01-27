@@ -3,8 +3,10 @@ import userModel from "../../models/users.js";
 import roleModel from "../../models/roles.js";
 import message from "../../utils/message.js";
 import validate from "../../utils/validate.js";
+import jwt from "jsonwebtoken";
 
 import { z } from "zod";
+import { SECRET_KEY } from "../../utils/secret.js";
 
 const schemaValidation = z.object({
   first_name: z
@@ -79,7 +81,19 @@ export default async function (req, res) {
 
     await userModel.create(newUser);
 
-    message(res, 201, "Register user success");
+    // CREATE USER TOKEN
+    const token = jwt.sign(
+      { role_name: findRoleCustomer._doc.name },
+      SECRET_KEY,
+      {
+        expiresIn: "120",
+      }
+    );
+
+    message(res, 201, "Register user success", {
+      token,
+      type: "Bearer",
+    });
   } catch (error) {
     message(res, 500, error?.message || "Internal server error");
   }
