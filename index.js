@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import SeedDB from "./src/utils/seed_db.js";
 import userRoute from "./src/routes/user.js";
+import productRoute from "./src/routes/product.js";
 
 import { PORT } from "./src/utils/secret.js";
 
@@ -17,8 +18,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/v1", userRoute);
+// DEFINE ROUTE
+app.use("/api/v1", [userRoute, productRoute]);
 
+// RUN SEEDING DB
 await SeedDB();
 app.listen(PORT, () =>
   console.log(`service running on http://localhost:${PORT}`)
