@@ -37,14 +37,6 @@ export default async function (req, res) {
   const file = req.file;
 
   try {
-    // CHECK VALIDATION FORM BODY
-    const body = req.body;
-    const checkValidate = validate(schemaValidation, body);
-    if (!checkValidate.success)
-      return message(res, 422, "Error validation", {
-        errors: checkValidate.errors,
-      });
-
     // CHECK USER BY ID
     const _id = req.params._id;
     const findUserByID = await userModel.findOne({
@@ -53,6 +45,14 @@ export default async function (req, res) {
     });
 
     if (!findUserByID) return message(res, 404, "User not found");
+
+    // CHECK VALIDATION FORM BODY
+    const body = req.body;
+    const checkValidate = validate(schemaValidation, body);
+    if (!checkValidate.success)
+      return message(res, 422, "Error validation", {
+        errors: checkValidate.errors,
+      });
 
     let payload = {};
     if (file) {
