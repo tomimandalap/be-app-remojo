@@ -58,34 +58,27 @@ export default async function (req, res) {
           password: 0,
         },
       },
+      {
+        $match: {
+          $or: [
+            { first_name: { $regex: q, $options: "i" } },
+            { last_name: { $regex: q, $options: "i" } },
+            { email: { $regex: q, $options: "i" } },
+            { phone: { $regex: q, $options: "i" } },
+          ],
+          "detail_role.name": "customer",
+          deleted_at: null,
+        },
+      },
     ];
 
     const data = await userModel
-      .aggregate([
-        ...filters,
-        {
-          $match: {
-            $or: [
-              { first_name: { $regex: q, $options: "i" } },
-              { last_name: { $regex: q, $options: "i" } },
-              { email: { $regex: q, $options: "i" } },
-              { phone: { $regex: q, $options: "i" } },
-            ],
-            "detail_role.name": "customer",
-            deleted_at: null,
-          },
-        },
-      ])
+      .aggregate(filters)
       .sort({ _id: sort_by }) // mongoose 1 = asc or -1 desc
       .skip(skip)
       .limit(per_page);
 
-    const countDocuments = await userModel
-      .aggregate([
-        ...filters,
-        { $match: { "detail_role.name": "customer", deleted_at: null } },
-      ])
-      .count("total");
+    const countDocuments = await userModel.aggregate(filters).count("total");
     const pagination = {
       page,
       per_page,
