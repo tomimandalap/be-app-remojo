@@ -1,5 +1,17 @@
 import transactionModel from "../../models/transaction.js";
 import message from "../../utils/message.js";
+import validate from "../../utils/validate.js";
+
+import { z } from "zod";
+
+const schemaValidation = z
+  .object({
+    start_date: z.coerce.date(),
+    end_date: z.coerce.date(),
+  })
+  .refine((data) => {
+    return !data.end_date || data.start_date <= data.end_date;
+  }, "start_date must not be greater than end_date");
 
 /**
  * @typedef {import('express').Request} ExpressRequest
@@ -13,8 +25,18 @@ import message from "../../utils/message.js";
 
 export default async function (req, res) {
   try {
+    const start_date = req.query.start_date;
+    const end_date = req.query.end_date;
+
+    // CHECK VALIDATION FORM QUERY
+    const checkValidate = validate(schemaValidation, req.query);
+
+    if (!checkValidate.success)
+      return message(res, 422, "Error validation", {
+        errors: checkValidate.errors,
+      });
+
     const q = req.query.q || "";
-    const sort_by = req.query.sort_by ? req.query.sort_by : "desc"; // mongoose 1 = asc or -1 desc
     const page = req.query.page ? Number(req.query.page) : 1;
     const per_page = req.query.per_page ? Number(req.query.per_page) : 10;
 
@@ -23,9 +45,21 @@ export default async function (req, res) {
     const filters = [
       {
         $match: {
-          $or: [
-            { order_id: { $regex: q, $options: "i" } },
-            { transaction_id: { $regex: q, $options: "i" } },
+          $and: [
+            {
+              $or: [
+                { order_id: { $regex: q, $options: "i" } },
+                { transaction_id: { $regex: q, $options: "i" } },
+              ],
+            },
+            {
+              $or: [
+                {
+                  "rental_duration.start_date": { $lte: new Date(end_date) },
+                  "rental_duration.end_date": { $gte: new Date(start_date) },
+                },
+              ],
+            },
           ],
           deleted_at: null,
         },
@@ -58,7 +92,7 @@ export default async function (req, res) {
 
     const data = await transactionModel
       .aggregate(filters)
-      .sort({ _id: sort_by })
+      .sort({ _id: "desc" })
       .skip(skip)
       .limit(per_page);
 
