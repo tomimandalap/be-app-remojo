@@ -22,6 +22,12 @@ transactionRoute.post(
   authentication,
   CheckStatus
 );
+transactionRoute.patch(
+  "/transaction/refund/:_id",
+  authentication,
+  admin,
+  Refund
+);
 transactionRoute.put("/transaction/refund/:_id", authentication, admin, Refund);
 
 export default transactionRoute;
