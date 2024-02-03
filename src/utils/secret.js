@@ -10,3 +10,4 @@ export const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
 export const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
 export const MIDTRANS_CLIENT_KEY = process.env.MIDTRANS_CLIENT_KEY;
 export const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY;
+export const MIDTRANS_URL_API = process.env.MIDTRANS_URL_API;
