@@ -66,9 +66,28 @@ export default async function (req, res) {
     });
 
     if (!findProductID.length) return message(res, 404, "Product not found");
-
     if (findProductID.length !== checkValidate.data.product_ids.length)
       return message(res, 400, "Some products were not found");
+
+    // FIND TRANSACTION BY PRODUCT IDs
+    const findTransaction = await transactionModel.find({
+      $or: [
+        {
+          "rental_duration.start_date": {
+            $lte: new Date(checkValidate.data.rental_duration.end_date),
+          },
+          "rental_duration.end_date": {
+            $gte: new Date(checkValidate.data.rental_duration.start_date),
+          },
+        },
+      ],
+      product_ids: { $in: checkValidate.data.product_ids },
+      status: { $nin: ["failure", "refund"] },
+      deleted_at: null,
+    });
+
+    if (findTransaction.length)
+      return message(res, 400, "Sorry, this car is already rented out");
 
     let item_details = findProductID.map((product) => {
       return {
