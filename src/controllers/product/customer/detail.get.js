@@ -20,6 +20,7 @@ export default async function (req, res) {
       {
         $match: {
           _id: new Types.ObjectId(_id),
+          deleted_at: null,
         },
       },
       {
