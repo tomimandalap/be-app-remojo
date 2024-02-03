@@ -1,6 +1,7 @@
 import express from "express";
 import Checkout from "../controllers/transaction/checkout.post.js";
 import List from "../controllers/transaction/list.get.js";
+import Detail from "../controllers/transaction/detail.get.js";
 
 import { authentication, customer } from "../middleware/auth.js";
 
@@ -13,5 +14,6 @@ transactionRoute.post(
   Checkout
 );
 transactionRoute.get("/transaction", authentication, List);
+transactionRoute.get("/transaction/:_id", authentication, Detail);
 
 export default transactionRoute;
