@@ -22,6 +22,11 @@ app.use(express.urlencoded({ extended: true }));
 // DEFINE ROUTE
 app.use("/api/v1", [userRoute, productRoute, transactionRoute]);
 
+// Handling not found
+app.all("*", (req, res) => {
+  res.status(404).send({ code: 404, message: "Not found" });
+});
+
 // RUN SEEDING DB
 await SeedDB();
 app.listen(PORT, () =>
