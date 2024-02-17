@@ -8,9 +8,7 @@ import { SECRET_KEY } from "../../utils/secret.js";
 import { z } from "zod";
 
 const schemaValidation = z.object({
-  email: z
-    .string()
-    .email("Invalid phone number format. Please enter a valid phone number"),
+  email: z.string().email("Invalid email format"),
   password: z
     .string()
     .regex(
