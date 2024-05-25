@@ -2,6 +2,8 @@ import transactionModel from "../../models/transaction.js";
 import message from "../../utils/message.js";
 import validate from "../../utils/validate.js";
 
+import mongoose from "mongoose"
+
 import { z } from "zod";
 
 const schemaValidation = z
@@ -80,7 +82,15 @@ export default async function (req, res) {
           from: "products",
           foreignField: "_id",
           localField: "product_ids",
-          as: "detail_product",
+          as: "products",
+        },
+      },
+      {
+        $lookup: {
+          from: "storages",
+          foreignField: "_id",
+          localField: "products.storage_id",
+          as: "image_storages",
         },
       },
       {
@@ -106,7 +116,29 @@ export default async function (req, res) {
       total: countDocuments.length ? countDocuments[0].total : 0,
     };
 
-    message(res, 200, "Data transaction", data, pagination);
+    let result = data.map((item) => {
+      let products = item.products.map((sub_item) => {
+        let image_detail = item.image_storages.find((image) => {
+          let image_id = new mongoose.Types.ObjectId(image._id).toString()
+          let storage_id = new mongoose.Types.ObjectId(sub_item.storage_id).toString()
+          return image_id === storage_id;
+        })
+        
+        return {
+          ...sub_item,
+          image_detail
+        }
+      });      
+
+      delete item.image_storages;
+      
+      return {
+        ...item,
+        products
+      }
+    })
+
+    message(res, 200, "Data transaction", result, pagination);
   } catch (error) {
     message(res, 500, error?.message || "Internal server error");
   }

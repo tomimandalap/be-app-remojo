@@ -1,6 +1,6 @@
 import transactionModel from "../../models/transaction.js";
 import message from "../../utils/message.js";
-import { Types } from "mongoose";
+import mongoose from "mongoose"
 
 /**
  * @typedef {import('express').Request} ExpressRequest
@@ -16,10 +16,10 @@ export default async function (req, res) {
   try {
     const _id = req.params._id;
 
-    const detail = await transactionModel.aggregate([
+    const data = await transactionModel.aggregate([
       {
         $match: {
-          _id: new Types.ObjectId(_id),
+          _id: new mongoose.Types.ObjectId(_id),
           deleted_at: null,
         },
       },
@@ -39,7 +39,15 @@ export default async function (req, res) {
           from: "products",
           foreignField: "_id",
           localField: "product_ids",
-          as: "detail_product",
+          as: "products",
+        },
+      },
+      {
+        $lookup: {
+          from: "storages",
+          foreignField: "_id",
+          localField: "products.storage_id",
+          as: "image_storages",
         },
       },
       {
@@ -49,7 +57,29 @@ export default async function (req, res) {
       },
     ]);
 
-    if (!detail.length) return message(res, 404, "Transaction not found");
+    if (!data.length) return message(res, 404, "Transaction not found");
+
+     let detail = data.map((item) => {
+      let products = item.products.map((sub_item) => {
+        let image_detail = item.image_storages.find((image) => {
+          let image_id = new mongoose.Types.ObjectId(image._id).toString()
+          let storage_id = new mongoose.Types.ObjectId(sub_item.storage_id).toString()
+          return image_id === storage_id;
+        })
+
+        return {
+          ...sub_item,
+          image_detail
+        }
+      });      
+
+      delete item.image_storages;
+      
+      return {
+        ...item,
+        products
+      }
+    })
 
     message(res, 200, "Detail transaction", detail[0]);
   } catch (error) {
