@@ -67,7 +67,6 @@ export default async function (req, res) {
             { phone: { $regex: q, $options: "i" } },
           ],
           "detail_role.name": "customer",
-          deleted_at: null,
         },
       },
     ];
