@@ -58,7 +58,6 @@ export default async function (req, res) {
         $match: {
           _id: new Types.ObjectId(_id),
           "detail_role.name": "customer",
-          deleted_at: null,
         },
       },
     ]);
