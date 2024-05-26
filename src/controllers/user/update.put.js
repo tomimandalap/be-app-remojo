@@ -55,17 +55,22 @@ export default async function (req, res) {
       });
 
     let payload = {};
+
+    
     if (file) {
       // FIND DATA IMG ON STORAGE BY STORAGE_ID
       const storage_id = findUserByID._doc.storage_id;
-      const findImgByStorageID = await storageModel.findById({
-        _id: storage_id,
-      });
-
-      // DELETE IMG ON CLOUDINARY AND STORAGE
-      if (findImgByStorageID) {
-        await cloudinary.v2.uploader.destroy(findImgByStorageID._doc.public_id);
-        await storageModel.deleteOne({ _id: storage_id });
+      
+      if (storage_id) {
+        const findImgByStorageID = await storageModel.findById({
+          _id: storage_id,
+        });
+        
+        // DELETE IMG ON CLOUDINARY AND STORAGE
+        if (findImgByStorageID) {
+          await cloudinary.v2.uploader.destroy(findImgByStorageID._doc.public_id);
+          await storageModel.deleteOne({ _id: storage_id });
+        }
       }
 
       // UPLOAD IMG ON CLOUDINARY
@@ -92,6 +97,9 @@ export default async function (req, res) {
       { ...payload, ...checkValidate.data },
       { new: true }
     );
+
+    // delete key password
+    delete updateUser._doc.password
 
     message(res, 200, "Update user success", updateUser);
   } catch (error) {
