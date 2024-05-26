@@ -56,7 +56,7 @@ export default async function (req, res) {
 
     const detail = await transactionModel.findOneAndUpdate(
       { _id },
-      { ...checkValidate.data, status: "refund" },
+      { ...checkValidate.data, status: "refund", refund_date: new Date() },
       { new: true }
     );
 
