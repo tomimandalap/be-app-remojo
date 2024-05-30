@@ -78,6 +78,14 @@ export default async function (req, res) {
         `${status_message} Please check your transaction`
       );
 
+    // TRANSACTION DOES"T EXIST
+    if ([407].includes(Number(status_code)))
+      return message(
+        res,
+        407,
+        status_message
+      );
+
     message(res, Number(status_code), status_message);
   } catch (error) {
     message(res, 500, error?.message || "Internal server error");
