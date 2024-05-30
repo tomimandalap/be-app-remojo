@@ -4,6 +4,7 @@ import List from "../controllers/transaction/list.get.js";
 import Detail from "../controllers/transaction/detail.get.js";
 import CheckStatus from "../controllers/transaction/checkstatus.post.js";
 import Refund from "../controllers/transaction/refund.put.js";
+import Remove from "../controllers/transaction/remove.delete.js";
 
 import { authentication, admin, customer } from "../middleware/auth.js";
 
@@ -29,5 +30,6 @@ transactionRoute.patch(
   Refund
 );
 transactionRoute.put("/transaction/refund/:_id", authentication, admin, Refund);
+transactionRoute.delete("/transaction/remove/:order_id", authentication, customer, Remove);
 
 export default transactionRoute;
