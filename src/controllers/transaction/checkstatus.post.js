@@ -82,7 +82,7 @@ export default async function (req, res) {
     if ([407].includes(Number(status_code)))
       return message(
         res,
-        407,
+        400,
         status_message
       );
 
