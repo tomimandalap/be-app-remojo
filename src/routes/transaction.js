@@ -30,6 +30,6 @@ transactionRoute.patch(
   Refund
 );
 transactionRoute.put("/transaction/refund/:_id", authentication, admin, Refund);
-transactionRoute.delete("/transaction/remove/:order_id", authentication, customer, Remove);
+transactionRoute.delete("/transaction/remove/:token", authentication, customer, Remove);
 
 export default transactionRoute;
