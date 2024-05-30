@@ -72,7 +72,7 @@ export default async function (req, res) {
       { new: true }
     );
 
-    return message(res, 200, status_message, detailTransaction);
+    message(res, 201, status_message, detailTransaction);
   } catch (error) {
     let resError = error
 
