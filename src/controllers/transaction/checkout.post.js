@@ -92,23 +92,23 @@ export default async function (req, res) {
     if (findTransaction.length)
       return message(res, 400, "Sorry, this car is already rented out");
 
-    let item_details = findProductID.map((product) => {
-      return {
-        id: product._doc._id,
-        name: product._doc.name,
-        price: product._doc.price,
-        // quantity: 1,
-        merchant_name: "REMOJO",
-        category: "MOBIL",
-      };
-    });
-
     // Calculate the difference in milliseconds
     const diffInMilliseconds = end_date - start_date;
 
     // Convert the difference from milliseconds to days
     const millisecondsInADay = 24 * 60 * 60 * 1000;
     const countDay = diffInMilliseconds / millisecondsInADay;
+
+    let item_details = findProductID.map((product) => {
+      return {
+        id: product._doc._id,
+        name: product._doc.name,
+        price: product._doc.price,
+        quantity: 1 * countDay,
+        merchant_name: "REMOJO",
+        category: "MOBIL",
+      };
+    });
 
     // a = accumulatior and b original value
     const sumPrice = item_details.reduce((a, b) => a + b.price, 0);
