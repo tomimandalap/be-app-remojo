@@ -104,7 +104,7 @@ export default async function (req, res) {
         id: product._doc._id,
         name: product._doc.name,
         price: product._doc.price,
-        quantity: 1 * countDay,
+        quantity: countDay < 2 ? 1 : countDay,
         merchant_name: "REMOJO",
         category: "MOBIL",
       };
