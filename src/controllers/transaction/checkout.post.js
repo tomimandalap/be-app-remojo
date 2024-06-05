@@ -97,7 +97,7 @@ export default async function (req, res) {
         id: product._doc._id,
         name: product._doc.name,
         price: product._doc.price,
-        quantity: 1,
+        // quantity: 1,
         merchant_name: "REMOJO",
         category: "MOBIL",
       };
