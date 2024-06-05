@@ -69,15 +69,18 @@ export default async function (req, res) {
     if (findProductID.length !== checkValidate.data.product_ids.length)
       return message(res, 400, "Some products were not found");
 
+    const start_date = new Date(checkValidate.data.rental_duration.start_date);
+    const end_date = new Date(checkValidate.data.rental_duration.end_date);
+
     // FIND TRANSACTION BY PRODUCT IDs
     const findTransaction = await transactionModel.find({
       $or: [
         {
           "rental_duration.start_date": {
-            $lte: new Date(checkValidate.data.rental_duration.end_date),
+            $lte: end_date,
           },
           "rental_duration.end_date": {
-            $gte: new Date(checkValidate.data.rental_duration.start_date),
+            $gte: start_date,
           },
         },
       ],
@@ -100,8 +103,16 @@ export default async function (req, res) {
       };
     });
 
+    // Calculate the difference in milliseconds
+    const diffInMilliseconds = end_date - start_date;
+
+    // Convert the difference from milliseconds to days
+    const millisecondsInADay = 24 * 60 * 60 * 1000;
+    const countDay = diffInMilliseconds / millisecondsInADay;
+
     // a = accumulatior and b original value
-    const gross_amount = item_details.reduce((a, b) => a + b.price, 0);
+    const sumPrice = item_details.reduce((a, b) => a + b.price, 0);
+    const gross_amount = countDay < 2 ? sumPrice : sumPrice * countDay;
 
     const order_id = `REMOJO-${nanoid(8)}-${nanoid(6)}`;
     let parameter = {
