@@ -83,6 +83,7 @@ export default async function (req, res) {
     );
 
     message(res, 201, "Register user success", {
+      user_id: dataUser._doc._id,
       token,
       type: "Bearer",
     });

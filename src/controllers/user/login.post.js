@@ -86,7 +86,7 @@ export default async function (req, res) {
       { expiresIn: "2h" }
     );
 
-    message(res, 200, "Login success", { token, type: "Bearer" });
+    message(res, 200, "Login success", { user_id: detailUser._id, token, type: "Bearer" });
   } catch (error) {
     message(res, 500, error?.message || "Internal server error");
   }
