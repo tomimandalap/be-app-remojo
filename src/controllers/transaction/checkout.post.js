@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import transactionModel from "../../models/transaction.js";
 import userModel from "../../models/users.js";
 import productModel from "../../models/product.js";
@@ -43,9 +42,6 @@ const schemaValidation = z.object({
  */
 
 export default async function (req, res) {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const body = req.body;
 
@@ -91,13 +87,10 @@ export default async function (req, res) {
       product_ids: { $in: checkValidate.data.product_ids },
       status: { $nin: ["failure", "refund"] },
       deleted_at: null,
-    }).session(session);
+    });
 
-    if (findTransaction.length) {
-      await session.abortTransaction();
-      session.endSession();
+    if (findTransaction.length)
       return message(res, 400, "Sorry, this car is already rented out");
-    }
 
     // Calculate the difference in milliseconds
     const diffInMilliseconds = end_date - start_date;
@@ -155,23 +148,15 @@ export default async function (req, res) {
 
         await transactionModel.create(payload);
 
-        await session.commitTransaction();
-        session.endSession();
-
         message(res, 201, "Checkout success", response);
       })
-      .catch(async (error) => {
-        await session.abortTransaction();
-        session.endSession();
-
+      .catch((error) => {
         const { error_messages: errors } = error.ApiResponse;
         message(res, 500, "Midtrans", {
           errors,
         });
       });
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
     message(res, 500, error?.message || "Internal server error");
   }
 }
